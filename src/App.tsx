@@ -24,10 +24,104 @@ function App() {
 
   const generateAIResponse = (userMessage: string): string => {
     const lowerMessage = userMessage.toLowerCase();
-    // hello||hii
-    if (lowerMessage.includes('hii') || lowerMessage.includes('hello')) {
-      return "i am a ipl ai chatbot how can i help you"
-      }
+    
+    // Greetings
+    if (lowerMessage.includes('hii') || lowerMessage.includes('hello') || lowerMessage.includes('hi')) {
+      return "Hello! I'm your IPL AI assistant with complete data from 2008-2025. I can tell you about any season, match, player performance, or tournament detail. What would you like to know?";
+    }
+    
+    // Season-wise information
+    if (lowerMessage.includes('2008') || lowerMessage.includes('first season') || lowerMessage.includes('inaugural')) {
+      return "IPL 2008 (April 18 - June 1): 🏆 Winner: Rajasthan Royals, Runner-up: Chennai Super Kings. Final: RR beat CSK by 3 wickets at DY Patil Stadium, Mumbai. Shane Warne captained RR to victory. Total matches: 59. Orange Cap: Shaun Marsh (616 runs), Purple Cap: Sohail Tanvir (22 wickets).";
+    }
+    
+    if (lowerMessage.includes('2009')) {
+      return "IPL 2009 (April 18 - May 24): 🏆 Winner: Deccan Chargers, Runner-up: Royal Challengers Bangalore. Final: DC beat RCB by 6 runs at Wanderers, Johannesburg (held in South Africa due to elections). Adam Gilchrist's captaincy. Total matches: 60. Orange Cap: Matthew Hayden (572 runs), Purple Cap: RP Singh (23 wickets).";
+    }
+    
+    if (lowerMessage.includes('2010')) {
+      return "IPL 2010 (March 12 - April 25): 🏆 Winner: Chennai Super Kings, Runner-up: Mumbai Indians. Final: CSK beat MI by 22 runs at DY Patil Stadium, Mumbai. MS Dhoni's first IPL title as captain. Total matches: 60. Orange Cap: Sachin Tendulkar (618 runs), Purple Cap: Pragyan Ojha (21 wickets).";
+    }
+    
+    if (lowerMessage.includes('2011')) {
+      return "IPL 2011 (April 8 - May 28): 🏆 Winner: Chennai Super Kings, Runner-up: Royal Challengers Bangalore. Final: CSK beat RCB by 58 runs at MA Chidambaram Stadium, Chennai. CSK's second consecutive title. Total matches: 74 (10 teams). Orange Cap: Chris Gayle (608 runs), Purple Cap: Lasith Malinga (28 wickets).";
+    }
+    
+    if (lowerMessage.includes('2012')) {
+      return "IPL 2012 (April 4 - May 27): 🏆 Winner: Kolkata Knight Riders, Runner-up: Chennai Super Kings. Final: KKR beat CSK by 5 wickets at MA Chidambaram Stadium, Chennai. Gautam Gambhir's captaincy led KKR to their first title. Total matches: 76. Orange Cap: Chris Gayle (733 runs), Purple Cap: Sunil Narine (24 wickets).";
+    }
+    
+    if (lowerMessage.includes('2013')) {
+      return "IPL 2013 (April 3 - May 26): 🏆 Winner: Mumbai Indians, Runner-up: Chennai Super Kings. Final: MI beat CSK by 23 runs at Eden Gardens, Kolkata. Rohit Sharma's first IPL title as captain. Total matches: 76. Orange Cap: Michael Hussey (733 runs), Purple Cap: Dwayne Bravo (32 wickets).";
+    }
+    
+    if (lowerMessage.includes('2014')) {
+      return "IPL 2014 (April 16 - June 1): 🏆 Winner: Kolkata Knight Riders, Runner-up: Kings XI Punjab. Final: KKR beat KXIP by 3 wickets at M. Chinnaswamy Stadium, Bangalore. Gautam Gambhir's second title. Total matches: 60 (8 teams). Orange Cap: Robin Uthappa (660 runs), Purple Cap: Mohit Sharma (23 wickets).";
+    }
+    
+    if (lowerMessage.includes('2015')) {
+      return "IPL 2015 (April 8 - May 24): 🏆 Winner: Mumbai Indians, Runner-up: Chennai Super Kings. Final: MI beat CSK by 41 runs at Eden Gardens, Kolkata. Rohit Sharma's second title. Total matches: 60. Orange Cap: David Warner (562 runs), Purple Cap: Dwayne Bravo (26 wickets).";
+    }
+    
+    if (lowerMessage.includes('2016')) {
+      return "IPL 2016 (April 9 - May 29): 🏆 Winner: Sunrisers Hyderabad, Runner-up: Royal Challengers Bangalore. Final: SRH beat RCB by 8 runs at M. Chinnaswamy Stadium, Bangalore. David Warner's captaincy. Virat Kohli scored record 973 runs! Total matches: 60. Orange Cap: Virat Kohli (973 runs), Purple Cap: Bhuvneshwar Kumar (23 wickets).";
+    }
+    
+    if (lowerMessage.includes('2017')) {
+      return "IPL 2017 (April 5 - May 21): 🏆 Winner: Mumbai Indians, Runner-up: Rising Pune Supergiant. Final: MI beat RPS by 1 run at Rajiv Gandhi Stadium, Hyderabad. Thrilling final! Rohit Sharma's third title. Total matches: 60. Orange Cap: David Warner (641 runs), Purple Cap: Bhuvneshwar Kumar (26 wickets).";
+    }
+    
+    if (lowerMessage.includes('2018')) {
+      return "IPL 2018 (April 7 - May 27): 🏆 Winner: Chennai Super Kings, Runner-up: Sunrisers Hyderabad. Final: CSK beat SRH by 8 wickets at Wankhede Stadium, Mumbai. CSK's comeback after 2-year suspension. MS Dhoni's third title. Total matches: 60. Orange Cap: Kane Williamson (735 runs), Purple Cap: Andrew Tye (24 wickets).";
+    }
+    
+    if (lowerMessage.includes('2019')) {
+      return "IPL 2019 (March 23 - May 12): 🏆 Winner: Mumbai Indians, Runner-up: Chennai Super Kings. Final: MI beat CSK by 1 run at Rajiv Gandhi Stadium, Hyderabad. Another thriller! Rohit Sharma's fourth title. Total matches: 60. Orange Cap: David Warner (692 runs), Purple Cap: Imran Tahir (26 wickets).";
+    }
+    
+    if (lowerMessage.includes('2020')) {
+      return "IPL 2020 (September 19 - November 10): 🏆 Winner: Mumbai Indians, Runner-up: Delhi Capitals. Final: MI beat DC by 5 wickets at Dubai International Stadium, UAE. Held in UAE due to COVID-19. Rohit Sharma's fifth title! Total matches: 60. Orange Cap: KL Rahul (670 runs), Purple Cap: Kagiso Rabada (30 wickets).";
+    }
+    
+    if (lowerMessage.includes('2021')) {
+      return "IPL 2021 (April 9 - October 15): 🏆 Winner: Chennai Super Kings, Runner-up: Kolkata Knight Riders. Final: CSK beat KKR by 27 runs at Dubai International Stadium, UAE. Split season due to COVID-19. MS Dhoni's fourth title. Total matches: 60. Orange Cap: Ruturaj Gaikwad (635 runs), Purple Cap: Harshal Patel (32 wickets).";
+    }
+    
+    if (lowerMessage.includes('2022')) {
+      return "IPL 2022 (March 26 - May 29): 🏆 Winner: Gujarat Titans, Runner-up: Rajasthan Royals. Final: GT beat RR by 7 wickets at Narendra Modi Stadium, Ahmedabad. GT won in their debut season! Hardik Pandya's captaincy. 10 teams, 74 matches. Orange Cap: Jos Buttler (863 runs), Purple Cap: Yuzvendra Chahal (27 wickets).";
+    }
+    
+    if (lowerMessage.includes('2023')) {
+      return "IPL 2023 (March 31 - May 28): 🏆 Winner: Chennai Super Kings, Runner-up: Gujarat Titans. Final: CSK beat GT by 5 wickets at Narendra Modi Stadium, Ahmedabad. MS Dhoni's fifth title at age 41! Total matches: 74. Orange Cap: Shubman Gill (890 runs), Purple Cap: Mohammed Shami (28 wickets).";
+    }
+    
+    if (lowerMessage.includes('2024')) {
+      return "IPL 2024 (March 22 - May 26): 🏆 Winner: Kolkata Knight Riders, Runner-up: Sunrisers Hyderabad. Final: KKR beat SRH by 8 wickets at MA Chidambaram Stadium, Chennai. Shreyas Iyer's captaincy led KKR to their third title after 10 years! Total matches: 74. Orange Cap: Virat Kohli (741 runs), Purple Cap: Mustafizur Rahman (28 wickets).";
+    }
+    
+    if (lowerMessage.includes('2025')) {
+      return "IPL 2025 (March - May): The season is currently ongoing/upcoming! 10 teams competing for the title. Stay tuned for live updates on matches, standings, and player performances. Which team do you think will lift the trophy this year?";
+    }
+    
+    // All seasons summary
+    if (lowerMessage.includes('all seasons') || lowerMessage.includes('complete list') || lowerMessage.includes('all winners')) {
+      return "🏆 IPL Winners (2008-2024): 2008: RR, 2009: DC, 2010: CSK, 2011: CSK, 2012: KKR, 2013: MI, 2014: KKR, 2015: MI, 2016: SRH, 2017: MI, 2018: CSK, 2019: MI, 2020: MI, 2021: CSK, 2022: GT, 2023: CSK, 2024: KKR. Most titles: MI (5), CSK (5), KKR (3). Total matches played: 1000+ across 17 seasons!";
+    }
+    
+    // Match statistics
+    if (lowerMessage.includes('total matches') || lowerMessage.includes('how many matches')) {
+      return "IPL Match Statistics: 2008-2011: 59-76 matches (8-10 teams), 2012-2013: 76 matches (9 teams), 2014-2021: 60 matches (8 teams), 2022-2024: 74 matches (10 teams). Total matches played: 1000+ across 17 seasons. Each team plays 14 league matches in current format.";
+    }
+    
+    // Venues and locations
+    if (lowerMessage.includes('venue') || lowerMessage.includes('stadium') || lowerMessage.includes('where played')) {
+      return "IPL Venues: Primarily in India across 8-12 cities. 2009: South Africa (elections), 2014: UAE & India (elections), 2020-2021: UAE (COVID-19). Major venues: Wankhede (Mumbai), Eden Gardens (Kolkata), M.A. Chidambaram (Chennai), M. Chinnaswamy (Bangalore), Feroz Shah Kotla (Delhi), and more!";
+    }
+    
+    // Records and achievements
+    if (lowerMessage.includes('highest score') || lowerMessage.includes('biggest win')) {
+      return "IPL Records: Highest team total: RCB 263/5 vs PWI (2013), Highest individual: Chris Gayle 175* (2013), Most runs season: Virat Kohli 973 (2016), Most wickets season: Harshal Patel 32 (2021), Biggest win by runs: MI beat DC by 146 runs (2017), Most sixes in match: Chris Gayle 17 (2013).";
+    }
     
     
     // IPL Full Form
@@ -179,10 +273,10 @@ function App() {
   };
 
   const suggestedQuestions = [
-    "What is the full form of IPL?",
-    "Tell me about Mumbai Indians history",
-    "Which team won the first IPL?",
-    "What happened to Deccan Chargers?"
+    "Tell me about IPL 2024 season",
+    "Show me all IPL winners from 2008-2024",
+    "What happened in IPL 2016?",
+    "Which venues hosted IPL matches?"
   ];
 
   return (
