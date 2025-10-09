@@ -1,5 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, MessageCircle, Zap, Users, TrendingUp, Sparkles, Trophy, Calendar } from 'lucide-react';
+import { Send, MessageCircle, Zap, Users, TrendingUp, Sparkles, Trophy, Calendar, Settings, Key } from 'lucide-react';
+import { Message } from './types';
+import { geminiService } from './geminiService';
+import { ApiKeyModal } from './components/ApiKeyModal';
 
 function App() {
   const [messages, setMessages] = useState<Message[]>([
@@ -12,7 +15,14 @@ function App() {
   ]);
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [showApiModal, setShowApiModal] = useState(false);
+  const [isApiConfigured, setIsApiConfigured] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Check if API key is already configured
+    setIsApiConfigured(geminiService.isConfigured());
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -22,216 +32,21 @@ function App() {
     scrollToBottom();
   }, [messages]);
 
-  const generateAIResponse = (userMessage: string): string => {
-    const lowerMessage = userMessage.toLowerCase();
-    
-    // Greetings
-    if (lowerMessage.includes('hii') || lowerMessage.includes('hello') || lowerMessage.includes('hi')) {
-      return "Hello! I'm your IPL AI assistant with complete data from 2008-2025. I can tell you about any season, match, player performance, or tournament detail. What would you like to know?";
-    }
-    
-    // Season-wise information
-    if (lowerMessage.includes('2008') || lowerMessage.includes('first season') || lowerMessage.includes('inaugural')) {
-      return "IPL 2008 (April 18 - June 1): 🏆 Winner: Rajasthan Royals, Runner-up: Chennai Super Kings. Final: RR beat CSK by 3 wickets at DY Patil Stadium, Mumbai. Shane Warne captained RR to victory. Total matches: 59. Orange Cap: Shaun Marsh (616 runs), Purple Cap: Sohail Tanvir (22 wickets).";
-    }
-    
-    if (lowerMessage.includes('2009')) {
-      return "IPL 2009 (April 18 - May 24): 🏆 Winner: Deccan Chargers, Runner-up: Royal Challengers Bangalore. Final: DC beat RCB by 6 runs at Wanderers, Johannesburg (held in South Africa due to elections). Adam Gilchrist's captaincy. Total matches: 60. Orange Cap: Matthew Hayden (572 runs), Purple Cap: RP Singh (23 wickets).";
-    }
-    
-    if (lowerMessage.includes('2010')) {
-      return "IPL 2010 (March 12 - April 25): 🏆 Winner: Chennai Super Kings, Runner-up: Mumbai Indians. Final: CSK beat MI by 22 runs at DY Patil Stadium, Mumbai. MS Dhoni's first IPL title as captain. Total matches: 60. Orange Cap: Sachin Tendulkar (618 runs), Purple Cap: Pragyan Ojha (21 wickets).";
-    }
-    
-    if (lowerMessage.includes('2011')) {
-      return "IPL 2011 (April 8 - May 28): 🏆 Winner: Chennai Super Kings, Runner-up: Royal Challengers Bangalore. Final: CSK beat RCB by 58 runs at MA Chidambaram Stadium, Chennai. CSK's second consecutive title. Total matches: 74 (10 teams). Orange Cap: Chris Gayle (608 runs), Purple Cap: Lasith Malinga (28 wickets).";
-    }
-    
-    if (lowerMessage.includes('2012')) {
-      return "IPL 2012 (April 4 - May 27): 🏆 Winner: Kolkata Knight Riders, Runner-up: Chennai Super Kings. Final: KKR beat CSK by 5 wickets at MA Chidambaram Stadium, Chennai. Gautam Gambhir's captaincy led KKR to their first title. Total matches: 76. Orange Cap: Chris Gayle (733 runs), Purple Cap: Sunil Narine (24 wickets).";
-    }
-    
-    if (lowerMessage.includes('2013')) {
-      return "IPL 2013 (April 3 - May 26): 🏆 Winner: Mumbai Indians, Runner-up: Chennai Super Kings. Final: MI beat CSK by 23 runs at Eden Gardens, Kolkata. Rohit Sharma's first IPL title as captain. Total matches: 76. Orange Cap: Michael Hussey (733 runs), Purple Cap: Dwayne Bravo (32 wickets).";
-    }
-    
-    if (lowerMessage.includes('2014')) {
-      return "IPL 2014 (April 16 - June 1): 🏆 Winner: Kolkata Knight Riders, Runner-up: Kings XI Punjab. Final: KKR beat KXIP by 3 wickets at M. Chinnaswamy Stadium, Bangalore. Gautam Gambhir's second title. Total matches: 60 (8 teams). Orange Cap: Robin Uthappa (660 runs), Purple Cap: Mohit Sharma (23 wickets).";
-    }
-    
-    if (lowerMessage.includes('2015')) {
-      return "IPL 2015 (April 8 - May 24): 🏆 Winner: Mumbai Indians, Runner-up: Chennai Super Kings. Final: MI beat CSK by 41 runs at Eden Gardens, Kolkata. Rohit Sharma's second title. Total matches: 60. Orange Cap: David Warner (562 runs), Purple Cap: Dwayne Bravo (26 wickets).";
-    }
-    
-    if (lowerMessage.includes('2016')) {
-      return "IPL 2016 (April 9 - May 29): 🏆 Winner: Sunrisers Hyderabad, Runner-up: Royal Challengers Bangalore. Final: SRH beat RCB by 8 runs at M. Chinnaswamy Stadium, Bangalore. David Warner's captaincy. Virat Kohli scored record 973 runs! Total matches: 60. Orange Cap: Virat Kohli (973 runs), Purple Cap: Bhuvneshwar Kumar (23 wickets).";
-    }
-    
-    if (lowerMessage.includes('2017')) {
-      return "IPL 2017 (April 5 - May 21): 🏆 Winner: Mumbai Indians, Runner-up: Rising Pune Supergiant. Final: MI beat RPS by 1 run at Rajiv Gandhi Stadium, Hyderabad. Thrilling final! Rohit Sharma's third title. Total matches: 60. Orange Cap: David Warner (641 runs), Purple Cap: Bhuvneshwar Kumar (26 wickets).";
-    }
-    
-    if (lowerMessage.includes('2018')) {
-      return "IPL 2018 (April 7 - May 27): 🏆 Winner: Chennai Super Kings, Runner-up: Sunrisers Hyderabad. Final: CSK beat SRH by 8 wickets at Wankhede Stadium, Mumbai. CSK's comeback after 2-year suspension. MS Dhoni's third title. Total matches: 60. Orange Cap: Kane Williamson (735 runs), Purple Cap: Andrew Tye (24 wickets).";
-    }
-    
-    if (lowerMessage.includes('2019')) {
-      return "IPL 2019 (March 23 - May 12): 🏆 Winner: Mumbai Indians, Runner-up: Chennai Super Kings. Final: MI beat CSK by 1 run at Rajiv Gandhi Stadium, Hyderabad. Another thriller! Rohit Sharma's fourth title. Total matches: 60. Orange Cap: David Warner (692 runs), Purple Cap: Imran Tahir (26 wickets).";
-    }
-    
-    if (lowerMessage.includes('2020')) {
-      return "IPL 2020 (September 19 - November 10): 🏆 Winner: Mumbai Indians, Runner-up: Delhi Capitals. Final: MI beat DC by 5 wickets at Dubai International Stadium, UAE. Held in UAE due to COVID-19. Rohit Sharma's fifth title! Total matches: 60. Orange Cap: KL Rahul (670 runs), Purple Cap: Kagiso Rabada (30 wickets).";
-    }
-    
-    if (lowerMessage.includes('2021')) {
-      return "IPL 2021 (April 9 - October 15): 🏆 Winner: Chennai Super Kings, Runner-up: Kolkata Knight Riders. Final: CSK beat KKR by 27 runs at Dubai International Stadium, UAE. Split season due to COVID-19. MS Dhoni's fourth title. Total matches: 60. Orange Cap: Ruturaj Gaikwad (635 runs), Purple Cap: Harshal Patel (32 wickets).";
-    }
-    
-    if (lowerMessage.includes('2022')) {
-      return "IPL 2022 (March 26 - May 29): 🏆 Winner: Gujarat Titans, Runner-up: Rajasthan Royals. Final: GT beat RR by 7 wickets at Narendra Modi Stadium, Ahmedabad. GT won in their debut season! Hardik Pandya's captaincy. 10 teams, 74 matches. Orange Cap: Jos Buttler (863 runs), Purple Cap: Yuzvendra Chahal (27 wickets).";
-    }
-    
-    if (lowerMessage.includes('2023')) {
-      return "IPL 2023 (March 31 - May 28): 🏆 Winner: Chennai Super Kings, Runner-up: Gujarat Titans. Final: CSK beat GT by 5 wickets at Narendra Modi Stadium, Ahmedabad. MS Dhoni's fifth title at age 41! Total matches: 74. Orange Cap: Shubman Gill (890 runs), Purple Cap: Mohammed Shami (28 wickets).";
-    }
-    
-    if (lowerMessage.includes('2024')) {
-      return "IPL 2024 (March 22 - May 26): 🏆 Winner: Kolkata Knight Riders, Runner-up: Sunrisers Hyderabad. Final: KKR beat SRH by 8 wickets at MA Chidambaram Stadium, Chennai. Shreyas Iyer's captaincy led KKR to their third title after 10 years! Total matches: 74. Orange Cap: Virat Kohli (741 runs), Purple Cap: Mustafizur Rahman (28 wickets).";
-    }
-    
-    if (lowerMessage.includes('2025')) {
-      return "IPL 2025 (March - May): The season is currently ongoing/upcoming! 10 teams competing for the title. Stay tuned for live updates on matches, standings, and player performances. Which team do you think will lift the trophy this year?";
-    }
-    
-    // All seasons summary
-    if (lowerMessage.includes('all seasons') || lowerMessage.includes('complete list') || lowerMessage.includes('all winners')) {
-      return "🏆 IPL Winners (2008-2024): 2008: RR, 2009: DC, 2010: CSK, 2011: CSK, 2012: KKR, 2013: MI, 2014: KKR, 2015: MI, 2016: SRH, 2017: MI, 2018: CSK, 2019: MI, 2020: MI, 2021: CSK, 2022: GT, 2023: CSK, 2024: KKR. Most titles: MI (5), CSK (5), KKR (3). Total matches played: 1000+ across 17 seasons!";
-    }
-    
-    // Match statistics
-    if (lowerMessage.includes('total matches') || lowerMessage.includes('how many matches')) {
-      return "IPL Match Statistics: 2008-2011: 59-76 matches (8-10 teams), 2012-2013: 76 matches (9 teams), 2014-2021: 60 matches (8 teams), 2022-2024: 74 matches (10 teams). Total matches played: 1000+ across 17 seasons. Each team plays 14 league matches in current format.";
-    }
-    
-    // Venues and locations
-    if (lowerMessage.includes('venue') || lowerMessage.includes('stadium') || lowerMessage.includes('where played')) {
-      return "IPL Venues: Primarily in India across 8-12 cities. 2009: South Africa (elections), 2014: UAE & India (elections), 2020-2021: UAE (COVID-19). Major venues: Wankhede (Mumbai), Eden Gardens (Kolkata), M.A. Chidambaram (Chennai), M. Chinnaswamy (Bangalore), Feroz Shah Kotla (Delhi), and more!";
-    }
-    
-    // Records and achievements
-    if (lowerMessage.includes('highest score') || lowerMessage.includes('biggest win')) {
-      return "IPL Records: Highest team total: RCB 263/5 vs PWI (2013), Highest individual: Chris Gayle 175* (2013), Most runs season: Virat Kohli 973 (2016), Most wickets season: Harshal Patel 32 (2021), Biggest win by runs: MI beat DC by 146 runs (2017), Most sixes in match: Chris Gayle 17 (2013).";
-    }
-    
-    
-    // IPL Full Form
-    if (lowerMessage.includes('full form') || lowerMessage.includes('ipl stands') || lowerMessage.includes('what is ipl') || lowerMessage.includes('ipl means')) {
-      return "IPL stands for Indian Premier League! It's India's premier professional Twenty20 cricket league, established in 2008 by the Board of Control for Cricket in India (BCCI). The league has become one of the most popular and lucrative cricket tournaments in the world.";
-    }
-    
-    // Team Information
-    if (lowerMessage.includes('team') || lowerMessage.includes('teams')) {
-      return "The IPL currently features 10 teams: Mumbai Indians (MI), Chennai Super Kings (CSK), Royal Challengers Bangalore (RCB), Kolkata Knight Riders (KKR), Delhi Capitals (DC), Punjab Kings (PBKS), Rajasthan Royals (RR), Sunrisers Hyderabad (SRH), Gujarat Titans (GT), and Lucknow Super Giants (LSG). Which team's history would you like to explore?";
-    }
-    
-    // Mumbai Indians History
-    if (lowerMessage.includes('mumbai') || lowerMessage.includes('mi')) {
-      return "Mumbai Indians (2008-present) are the most successful IPL franchise with 5 titles (2013, 2015, 2017, 2019, 2020)! Founded as one of the original 8 teams, they're owned by Reliance Industries. Key players include Rohit Sharma (captain since 2013), Jasprit Bumrah, and legends like Lasith Malinga. Home: Wankhede Stadium, Mumbai.";
-    }
-    
-    // Chennai Super Kings History
-    if (lowerMessage.includes('csk') || lowerMessage.includes('chennai')) {
-      return "Chennai Super Kings (2008-present, except 2016-17 suspension) have won 5 IPL titles (2010, 2011, 2018, 2021,2023)! Led by MS Dhoni since inception, they're known for consistency and experience. Owned by Chennai Super Kings Cricket Ltd. Famous for their yellow jersey and loyal fanbase. Home: M.A. Chidambaram Stadium, Chennai.";
-    }
-    
-    // Royal Challengers Bangalore History
-    if (lowerMessage.includes('rcb') || lowerMessage.includes('bangalore') || lowerMessage.includes('royal challengers')) {
-      return "Royal Challengers Bangalore (2008-present) have won 1  IPL title despite reaching 4 ipl finals (2009, 2011, 2016,2025)! Originally captained by Rahul Dravid, then Virat Kohli (2013-2021),Faf du Plessis(2022-2024),then rajat patidar . Known for star power including Virat Kohli, AB de Villiers (retired), and passionate red army fans. Home: M. Chinnaswamy Stadium, Bangalore."
-    }
-    
-    // Kolkata Knight Riders History
-    if (lowerMessage.includes('kkr') || lowerMessage.includes('kolkata')) {
-      return "Kolkata Knight Riders (2008-present) have won 3 IPL titles (2012,2014,2024)! Co-owned by Bollywood superstar Shah Rukh Khan, they transformed from early strugglers to champions under Gautam Gambhir's captaincy. Current captain Shreyas Iyer. Famous for their purple and gold colors and 'Korbo Lorbo Jeetbo Re' slogan. Home: Eden Gardens, Kolkata.";
-    }
-    
-    // Delhi Capitals History
-    if (lowerMessage.includes('delhi') || lowerMessage.includes('dc')) {
-      return "Delhi Capitals (2008-present, originally Delhi Daredevils until 2018) reached their first final in 2020! Rebranded in 2019 with new ownership and management. Led by young captain Rishabh Pant. Known for nurturing young Indian talent. Despite no titles yet, they've been consistent playoff contenders recently. Home: Arun Jaitley Stadium, Delhi.";
-    }
-    
-    // Punjab Kings History
-    if (lowerMessage.includes('punjab') || lowerMessage.includes('pbks') || lowerMessage.includes('kings xi')) {
-      return "Punjab Kings (2008-present, formerly Kings XI Punjab until 2020) reached the final once in 2014! Known for aggressive batting and discovering talent. Multiple captaincy changes over the years. Current captain Shikhar Dhawan. Famous for their red jersey and passionate Punjabi support. Home: PCA Stadium, Mohali.";
-    }
-    
-    // Rajasthan Royals History
-    if (lowerMessage.includes('rajasthan') || lowerMessage.includes('rr') || lowerMessage.includes('royals')) {
-      return "Rajasthan Royals (2008-present, except 2016-17 suspension) were the inaugural IPL champions in 2008! Led by Shane Warne, they defeated CSK in a thrilling final. Known for discovering young talent and playing fearless cricket. Current captain Sanju Samson. Returned strongly after suspension. Home: Sawai Mansingh Stadium, Jaipur.";
-    }
-    
-    // Sunrisers Hyderabad History
-    if (lowerMessage.includes('srh') || lowerMessage.includes('sunrisers') || lowerMessage.includes('hyderabad')) {
-      return "Sunrisers Hyderabad (2013-present) won the IPL in 2016! Replaced Deccan Chargers in 2013. Known for strong bowling attack and David Warner's explosive batting. Pat Cummins is the current captain. Famous orange army supporters and consistent playoff appearances. Home: Rajiv Gandhi International Stadium, Hyderabad.";
-    }
-    
-    // Gujarat Titans History
-    if (lowerMessage.includes('gujarat') || lowerMessage.includes('gt') || lowerMessage.includes('titans')) {
-      return "Gujarat Titans (2022-present) are the newest success story! Won the IPL title in their debut season 2022 under Hardik Pandya's captaincy - a historic achievement! Reached the final again in 2023. Known for team balance and smart auction strategies. Home: Narendra Modi Stadium, Ahmedabad.";
-    }
-    
-    // Lucknow Super Giants History
-    if (lowerMessage.includes('lucknow') || lowerMessage.includes('lsg') || lowerMessage.includes('super giants')) {
-      return "Lucknow Super Giants (2022-present) made an impressive debut! Led by KL Rahul, they reached the playoffs in their first season 2022. Owned by RPSG Group, they're building a strong foundation with experienced players and young talent. Home: Bharat Ratna Shri Atal Bihari Vajpayee Ekana Cricket Stadium, Lucknow.";
-    }
-    
-    // Historical teams
-    if (lowerMessage.includes('deccan') || lowerMessage.includes('chargers')) {
-      return "Deccan Chargers (2008-2012) won the IPL in 2009! Led by Adam Gilchrist, they defeated RCB in the final. Despite the title, they faced financial issues and were terminated after 2012, replaced by Sunrisers Hyderabad in 2013.";
-    }
-    
-    if (lowerMessage.includes('pune') || lowerMessage.includes('warriors') || lowerMessage.includes('supergiant')) {
-      return "Pune had two IPL teams: Pune Warriors India (2011-2013) who struggled and were terminated, and Rising Pune Supergiant (2016-2017) who replaced CSK during their suspension. RPS reached the final in 2017 under MS Dhoni's captaincy but lost to MI.";
-    }
-    
-    if (lowerMessage.includes('kochi') || lowerMessage.includes('tuskers')) {
-      return "Kochi Tuskers Kerala (2011) played only one IPL season! They faced ownership and financial issues and were terminated after 2011. They finished 8th in their only season.";
-    }
-    
-    // Player Information
-    if (lowerMessage.includes('virat') || lowerMessage.includes('kohli')) {
-      return "Virat Kohli is an IPL legend! The former RCB captain (2013-2021) has scored over 7000 runs in the IPL and holds the record for most runs in a single season (973 in 2016). His passion and intensity are unmatched! He's been with RCB since 2008.";
-    }
-    
-    if (lowerMessage.includes('dhoni') || lowerMessage.includes('ms')) {
-      return "MS Dhoni, Captain Cool! The CSK captain has led them to 4 IPL titles (2010, 2011, 2018, 2021). His finishing ability and calm leadership under pressure make him one of the greatest IPL players ever. Those helicopter shots are legendary! He's been CSK's captain since 2008.";
-    }
-    
-    if (lowerMessage.includes('rohit') || lowerMessage.includes('sharma')) {
-      return "Rohit Sharma, the Hitman! MI captain since 2013, he's led them to 5 IPL titles - the most by any captain. Known for his elegant stroke play and tactical acumen. He's scored over 6000 runs in the IPL and holds multiple records including most sixes by an Indian.";
-    }
-    
-    // Records and Stats
-    if (lowerMessage.includes('record') || lowerMessage.includes('stat')) {
-      return "Amazing IPL records: Highest individual score - Chris Gayle (175*), Most runs overall - Virat Kohli (7000+), Most wickets - Lasith Malinga (170), Most sixes in a match - Chris Gayle (17), Most titles as captain - Rohit Sharma (5), Most consistent team - CSK (10 playoff appearances). What specific record interests you?";
-    }
-    
-    // History and Timeline
-    if (lowerMessage.includes('history') || lowerMessage.includes('started') || lowerMessage.includes('first') || lowerMessage.includes('2008')) {
-      return "IPL history: Started in 2008 with 8 teams, first match was KKR vs RCB on April 18, 2008. Rajasthan Royals won the inaugural title. The league expanded to 10 teams in 2011, then back to 8 (2014-2017), 8 teams (2018-2021), and now 10 teams again since 2022. It's revolutionized cricket globally!";
-    }
-    
-    // Predictions
-    if (lowerMessage.includes('prediction') || lowerMessage.includes('winner') || lowerMessage.includes('champion')) {
-      return "Predicting IPL winners is always exciting! It depends on team form, player availability, pitch conditions, and those crucial moments. MI and CSK have been most successful historically, but GT showed new teams can win immediately. Every team has a chance - that's the beauty of IPL! Which team do you think will perform well?";
-    }
-    
-    // General player question
-    if (lowerMessage.includes('player') || lowerMessage.includes('best')) {
-      return "The IPL has incredible talent! From Rohit Sharma's captaincy to AB de Villiers' innovation, Bumrah's yorkers to Russell's power-hitting. Current stars like Shubman Gill, Rishabh Pant, Hardik Pandya, and Rashid Khan are carrying the torch forward! Which player would you like to know about?";
-    }
-    
-    return "That's a great IPL question! The league has so many fascinating aspects - from thrilling matches to incredible individual performances and rich team histories. Feel free to ask about specific teams, players, records, history, or anything else IPL-related!";
+  const handleApiKeySubmit = (apiKey: string) => {
+    geminiService.setApiKey(apiKey);
+    setIsApiConfigured(true);
+    // Store in localStorage for persistence
+    localStorage.setItem('gemini_api_key', apiKey);
   };
+
+  // Load API key from localStorage on component mount
+  useEffect(() => {
+    const storedApiKey = localStorage.getItem('gemini_api_key');
+    if (storedApiKey) {
+      geminiService.setApiKey(storedApiKey);
+      setIsApiConfigured(true);
+    }
+  }, []);
 
   const handleSendMessage = async () => {
     if (!inputText.trim()) return;
