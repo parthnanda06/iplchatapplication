@@ -272,6 +272,12 @@ function App() {
         </div>
       </div>
 
+      <ApiKeyModal 
+        isOpen={showApiModal}
+        onClose={() => setShowApiModal(false)}
+        onSubmit={handleApiKeySubmit}
+      />
+
       <style jsx>{`
         @keyframes fade-in {
           from { opacity: 0; transform: translateY(20px); }
