@@ -121,9 +121,24 @@ function App() {
                 <p className="text-blue-300/80 text-sm font-medium">Your premium cricket conversation companion</p>
               </div>
             </div>
-            <div className="hidden md:flex items-center space-x-2 bg-white/10 backdrop-blur-md rounded-full px-4 py-2 border border-white/20">
-              <Sparkles className="w-4 h-4 text-yellow-400" />
-              <span className="text-white text-sm font-medium">AI Powered</span>
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={() => setShowApiModal(true)}
+                className={`flex items-center space-x-2 backdrop-blur-md rounded-full px-4 py-2 border transition-all duration-300 hover:scale-105 ${
+                  isApiConfigured 
+                    ? 'bg-green-500/20 border-green-400/30 text-green-300' 
+                    : 'bg-orange-500/20 border-orange-400/30 text-orange-300'
+                }`}
+              >
+                <Key className="w-4 h-4" />
+                <span className="text-sm font-medium hidden md:block">
+                  {isApiConfigured ? 'API Ready' : 'Setup API'}
+                </span>
+              </button>
+              <div className="hidden md:flex items-center space-x-2 bg-white/10 backdrop-blur-md rounded-full px-4 py-2 border border-white/20">
+                <Sparkles className="w-4 h-4 text-yellow-400" />
+                <span className="text-white text-sm font-medium">AI Powered</span>
+              </div>
             </div>
           </div>
         </div>

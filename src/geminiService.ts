@@ -5,18 +5,20 @@ class GeminiService {
   private model: any = null;
 
   constructor() {
-    // Initialize with API key from environment or prompt user
     this.initializeAPI();
   }
 
   private initializeAPI() {
-    // For demo purposes, we'll use a placeholder
-    // In production, you'd get this from environment variables
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY || localStorage.getItem('gemini_api_key') || '';
     
     if (apiKey) {
-      this.genAI = new GoogleGenerativeAI(apiKey);
-      this.model = this.genAI.getGenerativeModel({ model: "gemini-pro" });
+      try {
+        this.genAI = new GoogleGenerativeAI(apiKey);
+        this.model = this.genAI.getGenerativeModel({ model: "gemini-pro" });
+      } catch (error) {
+        console.error('Failed to initialize Gemini API:', error);
+        this.model = null;
+      }
     }
   }
 
@@ -29,7 +31,13 @@ class GeminiService {
       const prompt = this.createIPLPrompt(userMessage);
       const result = await this.model.generateContent(prompt);
       const response = await result.response;
-      return response.text();
+      const text = response.text();
+      
+      if (!text || text.trim().length === 0) {
+        return this.getFallbackResponse(userMessage);
+      }
+      
+      return text;
     } catch (error) {
       console.error('Gemini API Error:', error);
       return this.getFallbackResponse(userMessage);
@@ -37,31 +45,54 @@ class GeminiService {
   }
 
   private createIPLPrompt(userMessage: string): string {
-    return `You are an expert IPL (Indian Premier League) AI assistant with comprehensive knowledge about cricket. 
+    return `You are an expert IPL (Indian Premier League) cricket assistant with comprehensive knowledge about all IPL seasons from 2008 to 2025.
 
-Context: You have complete data about IPL from 2008-2025, including:
-- All seasons, winners, runners-up, and finals details
-- Team histories, player statistics, and records
-- Match venues, formats, and tournament structures
-- Historical events, COVID-19 impacts, and venue changes
+COMPREHENSIVE IPL DATA:
+- IPL 2008: Winner: Rajasthan Royals, Runner-up: Chennai Super Kings, Final: RR beat CSK by 3 wickets at DY Patil Stadium Mumbai
+- IPL 2009: Winner: Deccan Chargers, Runner-up: Royal Challengers Bangalore, Final: DC beat RCB by 6 runs at Wanderers Stadium Johannesburg
+- IPL 2010: Winner: Chennai Super Kings, Runner-up: Mumbai Indians, Final: CSK beat MI by 22 runs at DY Patil Stadium Mumbai
+- IPL 2011: Winner: Chennai Super Kings, Runner-up: Royal Challengers Bangalore, Final: CSK beat RCB by 58 runs at MA Chidambaram Stadium Chennai
+- IPL 2012: Winner: Kolkata Knight Riders, Runner-up: Chennai Super Kings, Final: KKR beat CSK by 5 wickets at MA Chidambaram Stadium Chennai
+- IPL 2013: Winner: Mumbai Indians, Runner-up: Chennai Super Kings, Final: MI beat CSK by 23 runs at Eden Gardens Kolkata
+- IPL 2014: Winner: Kolkata Knight Riders, Runner-up: Kings XI Punjab, Final: KKR beat KXIP by 3 wickets at M Chinnaswamy Stadium Bangalore
+- IPL 2015: Winner: Mumbai Indians, Runner-up: Chennai Super Kings, Final: MI beat CSK by 41 runs at Eden Gardens Kolkata
+- IPL 2016: Winner: Sunrisers Hyderabad, Runner-up: Royal Challengers Bangalore, Final: SRH beat RCB by 8 runs at M Chinnaswamy Stadium Bangalore
+- IPL 2017: Winner: Mumbai Indians, Runner-up: Rising Pune Supergiant, Final: MI beat RPS by 1 run at Rajiv Gandhi Stadium Hyderabad
+- IPL 2018: Winner: Chennai Super Kings, Runner-up: Sunrisers Hyderabad, Final: CSK beat SRH by 8 wickets at Wankhede Stadium Mumbai
+- IPL 2019: Winner: Mumbai Indians, Runner-up: Chennai Super Kings, Final: MI beat CSK by 1 run at Rajiv Gandhi Stadium Hyderabad
+- IPL 2020: Winner: Mumbai Indians, Runner-up: Delhi Capitals, Final: MI beat DC by 5 wickets at Dubai International Stadium (UAE)
+- IPL 2021: Winner: Chennai Super Kings, Runner-up: Kolkata Knight Riders, Final: CSK beat KKR by 27 runs at Dubai International Stadium (UAE)
+- IPL 2022: Winner: Gujarat Titans, Runner-up: Rajasthan Royals, Final: GT beat RR by 7 wickets at Narendra Modi Stadium Ahmedabad
+- IPL 2023: Winner: Chennai Super Kings, Runner-up: Gujarat Titans, Final: CSK beat GT by 5 wickets at Narendra Modi Stadium Ahmedabad
+- IPL 2024: Winner: Kolkata Knight Riders, Runner-up: Sunrisers Hyderabad, Final: KKR beat SRH by 8 wickets at MA Chidambaram Stadium Chennai
 
-Instructions:
-- Provide accurate, detailed, and engaging responses about IPL
-- Use emojis and formatting to make responses visually appealing
-- Include specific statistics, dates, and facts when relevant
-- If asked about current/live matches, explain that you provide historical data
-- Keep responses informative but conversational
-- Focus specifically on IPL-related content
+TEAM RECORDS:
+- Most titles: Mumbai Indians & Chennai Super Kings (5 each)
+- KKR: 3 titles (2012, 2014, 2024)
+- Other winners: RR (2008), DC (2009), SRH (2016), GT (2022)
 
-User Question: ${userMessage}
+SPECIAL SEASONS:
+- 2009: Held in South Africa due to general elections in India
+- 2014: Partially in UAE, partially in India
+- 2020-2021: Held in UAE due to COVID-19 pandemic
+- 2016-2017: CSK and RR suspended, replaced by RPS and GL
 
-Please provide a comprehensive and engaging response about this IPL topic.`;
+INSTRUCTIONS:
+1. Provide accurate, detailed responses about IPL
+2. Use emojis and formatting for engaging responses
+3. Include specific statistics, dates, and facts
+4. Keep responses conversational but informative
+5. If unsure about recent data, mention it's based on available information
+6. Focus specifically on IPL cricket content
+
+User Question: "${userMessage}"
+
+Provide a comprehensive, engaging response about this IPL topic with specific details, statistics, and context.`;
   }
 
   private getFallbackResponse(userMessage: string): string {
     const lowerMessage = userMessage.toLowerCase();
     
-    // Enhanced fallback responses with comprehensive IPL data
     if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hii')) {
       return "Hello! 🏏 I'm your IPL AI assistant with complete data from 2008-2025. I can tell you about any season, match, player performance, team history, records, or tournament details. What would you like to explore about the Indian Premier League?";
     }
@@ -99,8 +130,14 @@ Please provide a comprehensive and engaging response about this IPL topic.`;
 
   setApiKey(apiKey: string) {
     if (apiKey) {
-      this.genAI = new GoogleGenerativeAI(apiKey);
-      this.model = this.genAI.getGenerativeModel({ model: "gemini-pro" });
+      try {
+        this.genAI = new GoogleGenerativeAI(apiKey);
+        this.model = this.genAI.getGenerativeModel({ model: "gemini-pro" });
+        localStorage.setItem('gemini_api_key', apiKey);
+      } catch (error) {
+        console.error('Failed to set API key:', error);
+        this.model = null;
+      }
     }
   }
 
