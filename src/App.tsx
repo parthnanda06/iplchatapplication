@@ -59,21 +59,32 @@ function App() {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const messageToSend = inputText;
     setInputText('');
     setIsTyping(true);
 
-    // Simulate AI thinking time
-    setTimeout(() => {
+    try {
+      const responseText = await geminiService.generateResponse(messageToSend);
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
-        text: generateAIResponse(inputText),
+        text: responseText,
         isUser: false,
         timestamp: new Date()
       };
-      
+
       setMessages(prev => [...prev, aiResponse]);
+    } catch (error) {
+      console.error('Error generating response:', error);
+      const errorResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        text: "I'm having trouble connecting right now. Please make sure your API key is configured correctly.",
+        isUser: false,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorResponse]);
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
