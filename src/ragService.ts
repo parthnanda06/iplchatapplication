@@ -124,10 +124,16 @@ const IPL_KNOWLEDGE_BASE = [
   }
 ];
 
-interface Document {
+interface KnowledgeBaseDocument {
   id: string;
   content: string;
   category: string;
+  year?: number;
+  team?: string;
+  topic?: string;
+}
+
+interface Document extends KnowledgeBaseDocument {
   embedding?: number[];
   metadata?: Record<string, unknown>;
 }
@@ -280,7 +286,7 @@ class RAGService {
     return scoredDocs.map(item => item.document);
   }
 
-  private keywordSearch(query: string, topK: number): Promise<Document[]> {
+  private keywordSearch(query: string, topK: number): Document[] {
     const scoredDocs = this.documents
       .map(doc => ({
         document: doc,
@@ -290,7 +296,7 @@ class RAGService {
       .sort((a, b) => b.score - a.score)
       .slice(0, topK);
 
-    return Promise.resolve(scoredDocs.map(item => item.document));
+    return scoredDocs.map(item => item.document);
   }
 
   async generateRAGResponse(query: string, llmGenerateFunction: (prompt: string) => Promise<string>): Promise<{ response: string; sources: Document[] }> {
