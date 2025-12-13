@@ -1,10 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, MessageCircle, Zap, Users, TrendingUp, Sparkles, Trophy, Calendar, Settings, Key } from 'lucide-react';
+import { Send, MessageCircle, Zap, Users, TrendingUp, Sparkles, Trophy, Calendar, Settings, Key, LogOut, Loader } from 'lucide-react';
 import { Message } from './types';
 import { geminiService } from './geminiService';
 import { ApiKeyModal } from './components/ApiKeyModal';
+import { AuthPage } from './pages/AuthPage';
+import { useAuth } from './context/AuthContext';
 
 function App() {
+  const { user, loading, signOut } = useAuth();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -17,7 +20,33 @@ function App() {
   const [isTyping, setIsTyping] = useState(false);
   const [showApiModal, setShowApiModal] = useState(false);
   const [isApiConfigured, setIsApiConfigured] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
+        <div className="flex flex-col items-center space-y-4">
+          <Loader className="w-12 h-12 text-blue-400 animate-spin" />
+          <p className="text-white text-lg font-medium">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <AuthPage />;
+  }
+
+  const handleSignOut = async () => {
+    setIsSigningOut(true);
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Error signing out:', error);
+      setIsSigningOut(false);
+    }
+  };
 
   useEffect(() => {
     // Check if API key is already configured
@@ -136,8 +165,8 @@ function App() {
               <button
                 onClick={() => setShowApiModal(true)}
                 className={`flex items-center space-x-2 backdrop-blur-md rounded-full px-4 py-2 border transition-all duration-300 hover:scale-105 ${
-                  isApiConfigured 
-                    ? 'bg-green-500/20 border-green-400/30 text-green-300' 
+                  isApiConfigured
+                    ? 'bg-green-500/20 border-green-400/30 text-green-300'
                     : 'bg-orange-500/20 border-orange-400/30 text-orange-300'
                 }`}
               >
@@ -150,6 +179,18 @@ function App() {
                 <Sparkles className="w-4 h-4 text-yellow-400" />
                 <span className="text-white text-sm font-medium">AI Powered</span>
               </div>
+              <button
+                onClick={handleSignOut}
+                disabled={isSigningOut}
+                className="flex items-center space-x-2 backdrop-blur-md rounded-full px-4 py-2 border border-red-400/30 bg-red-500/20 text-red-300 hover:bg-red-500/30 transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSigningOut ? (
+                  <Loader className="w-4 h-4 animate-spin" />
+                ) : (
+                  <LogOut className="w-4 h-4" />
+                )}
+                <span className="text-sm font-medium hidden md:block">Logout</span>
+              </button>
             </div>
           </div>
         </div>
