@@ -1,14 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, MessageCircle, Zap, Users, TrendingUp, Sparkles, Trophy, Calendar, Settings, Key } from 'lucide-react';
+import { Send, MessageCircle, Zap, Users, Sparkles, Trophy, Calendar, Key, Database } from 'lucide-react';
 import { Message } from './types';
 import { geminiService } from './geminiService';
 import { ApiKeyModal } from './components/ApiKeyModal';
+import { RAGStatusPanel } from './components/RAGStatusPanel';
 
 function App() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: "Hello! I'm your IPL AI assistant. Ask me anything about the Indian Premier League - teams, players, stats, matches, history, or predictions!",
+      text: "Hello! I'm your IPL AI assistant powered by advanced RAG (Retrieval-Augmented Generation) technology. I have access to a comprehensive IPL knowledge base and can provide accurate information about teams, players, stats, matches, history, and predictions! Ask me anything about the Indian Premier League.",
       isUser: false,
       timestamp: new Date(Date.now() - 60000)
     }
@@ -16,6 +17,7 @@ function App() {
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [showApiModal, setShowApiModal] = useState(false);
+  const [showRAGPanel, setShowRAGPanel] = useState(false);
   const [isApiConfigured, setIsApiConfigured] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -145,6 +147,13 @@ function App() {
                 <span className="text-sm font-medium hidden md:block">
                   {isApiConfigured ? 'API Ready' : 'Setup API'}
                 </span>
+              </button>
+              <button
+                onClick={() => setShowRAGPanel(true)}
+                className="flex items-center space-x-2 bg-purple-500/20 border-purple-400/30 text-purple-300 backdrop-blur-md rounded-full px-4 py-2 border transition-all duration-300 hover:scale-105"
+              >
+                <Database className="w-4 h-4" />
+                <span className="text-sm font-medium hidden md:block">RAG Status</span>
               </button>
               <div className="hidden md:flex items-center space-x-2 bg-white/10 backdrop-blur-md rounded-full px-4 py-2 border border-white/20">
                 <Sparkles className="w-4 h-4 text-yellow-400" />
@@ -304,6 +313,11 @@ function App() {
         onSubmit={handleApiKeySubmit}
       />
 
+      <RAGStatusPanel
+        isOpen={showRAGPanel}
+        onClose={() => setShowRAGPanel(false)}
+      />
+
       <style jsx>{`
         @keyframes fade-in {
           from { opacity: 0; transform: translateY(20px); }
@@ -327,7 +341,7 @@ function App() {
           width: 6px;
         }
         
-        .scrollbar-thumb-white\/20::-webkit-scrollbar-thumb {
+        .scrollbar-thumb-white\\/20::-webkit-scrollbar-thumb {
           background-color: rgba(255, 255, 255, 0.2);
           border-radius: 3px;
         }
