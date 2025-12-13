@@ -1,11 +1,25 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenerativeAI, GenerativeModel } from '@google/generative-ai';
+import { ragService } from './ragService';
 
 class GeminiService {
   private genAI: GoogleGenerativeAI | null = null;
-  private model: any = null;
+  private model: GenerativeModel | null = null;
+  private conversationHistory: Array<{ role: string; content: string }> = [];
+  private useRAG: boolean = true;
 
   constructor() {
     this.initializeAPI();
+    // Initialize RAG service in background
+    this.initializeRAG();
+  }
+
+  private async initializeRAG() {
+    try {
+      await ragService.initialize();
+      console.log('RAG service ready:', ragService.getStats());
+    } catch (error) {
+      console.error('RAG initialization error:', error);
+    }
   }
 
   private initializeAPI() {
@@ -23,21 +37,63 @@ class GeminiService {
   }
 
   async generateResponse(userMessage: string): Promise<string> {
+    // Add user message to conversation history
+    this.conversationHistory.push({
+      role: 'user',
+      content: userMessage
+    });
+
+    // Keep only last 10 messages to manage context
+    if (this.conversationHistory.length > 10) {
+      this.conversationHistory = this.conversationHistory.slice(-10);
+    }
+
     if (!this.model) {
       return this.getFallbackResponse(userMessage);
     }
 
     try {
-      const prompt = this.createIPLPrompt(userMessage);
-      const result = await this.model.generateContent(prompt);
-      const response = await result.response;
-      const text = response.text();
-      
-      if (!text || text.trim().length === 0) {
-        return this.getFallbackResponse(userMessage);
+      let response: string;
+
+      // Use RAG-enhanced generation if available
+      if (this.useRAG) {
+        try {
+          const ragResult = await ragService.generateRAGResponse(
+            userMessage,
+            async (prompt: string) => {
+              const result = await this.model.generateContent(prompt);
+              const res = await result.response;
+              return res.text();
+            }
+          );
+          response = ragResult.response;
+          console.log('RAG sources used:', ragResult.sources.length);
+        } catch (ragError) {
+          console.warn('RAG generation failed, falling back to standard generation:', ragError);
+          // Fallback to standard generation
+          const prompt = this.createIPLPrompt(userMessage);
+          const result = await this.model.generateContent(prompt);
+          const res = await result.response;
+          response = res.text();
+        }
+      } else {
+        const prompt = this.createIPLPrompt(userMessage);
+        const result = await this.model.generateContent(prompt);
+        const res = await result.response;
+        response = res.text();
       }
       
-      return text;
+      if (!response || response.trim().length === 0) {
+        return this.getFallbackResponse(userMessage);
+      }
+
+      // Add assistant response to conversation history
+      this.conversationHistory.push({
+        role: 'assistant',
+        content: response
+      });
+      
+      return response;
     } catch (error) {
       console.error('Gemini API Error:', error);
       return this.getFallbackResponse(userMessage);
@@ -143,6 +199,27 @@ Provide a comprehensive, engaging response about this IPL topic with specific de
 
   isConfigured(): boolean {
     return this.model !== null;
+  }
+
+  // Toggle RAG mode
+  setRAGMode(enabled: boolean): void {
+    this.useRAG = enabled;
+    console.log('RAG mode:', enabled ? 'enabled' : 'disabled');
+  }
+
+  // Get conversation history
+  getConversationHistory(): Array<{ role: string; content: string }> {
+    return this.conversationHistory;
+  }
+
+  // Clear conversation history
+  clearHistory(): void {
+    this.conversationHistory = [];
+  }
+
+  // Get RAG statistics
+  getRAGStats() {
+    return ragService.getStats();
   }
 }
 
